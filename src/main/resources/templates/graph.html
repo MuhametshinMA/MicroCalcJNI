@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>График функции</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+    }
+    .container {
+        display: flex;
+        justify-content: space-between;
+    }
+    .form-container {
+        flex: 1;
+        margin-right: 20px; /* Отступ справа от формы */
+    }
+    canvas {
+        max-width: 800px;
+        flex: 1;
+    }
+    #result {
+        margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<h1>Введите параметры для построения графика</h1>
+<div class="container">
+  <div class="form-container">
+    <form id="graphForm" action="/api/graph/graph" method="post">
+      <label for="expression">Функция (например, sin(x)):</label><br>
+      <input type="text" id="expression" name="expression" required><br><br>
+
+      <label for="xBegin">Начальное значение x:</label><br>
+      <input type="number" id="xBegin" name="xBegin" required><br><br>
+
+      <label for="xEnd">Конечное значение x:</label><br>
+      <input type="number" id="xEnd" name="xEnd" required><br><br>
+
+      <label for="step">Шаг:</label><br>
+      <input type="number" step="any" id="step" name="step" required><br><br>
+
+      <label for="yBegin">Начальное значение y:</label><br>
+      <input type="number" id="yBegin" name="yBegin" required><br><br>
+
+      <label for="yEnd">Конечное значение y:</label><br>
+      <input type="number" id="yEnd" name="yEnd" required><br><br>
+
+      <input type="submit" value="Построить график">
+      <button type="button" id="clearButton">Очистить поля</button>
+    </form>
+    <button onclick="window.location.href='/api/calculations'">Вернуться к расчетам</button>
+  </div>
+
+  <canvas id="myChart"></canvas>
+</div>
+
+<div class="result" th:if="${expression != null}">
+  <h2>Результаты</h2>
+  <p>График функции: <span th:text="${expression}"></span></p>
+  <p>Ошибка: <span th:text="${errorMessage}"></span></p>
+</div>
+
+
+<script>
+  // Сохраняем значения полей в localStorage
+  function saveInputs() {
+      localStorage.setItem('expression', document.getElementById('expression').value);
+      localStorage.setItem('xBegin', document.getElementById('xBegin').value);
+      localStorage.setItem('xEnd', document.getElementById('xEnd').value);
+      localStorage.setItem('step', document.getElementById('step').value);
+      localStorage.setItem('yBegin', document.getElementById('yBegin').value);
+      localStorage.setItem('yEnd', document.getElementById('yEnd').value);
+  }
+
+  // Восстанавливаем значения полей из localStorage
+  function loadInputs() {
+      document.getElementById('expression').value = localStorage.getItem('expression') || '';
+      document.getElementById('xBegin').value = localStorage.getItem('xBegin') || '';
+      document.getElementById('xEnd').value = localStorage.getItem('xEnd') || '';
+      document.getElementById('step').value = localStorage.getItem('step') || '';
+      document.getElementById('yBegin').value = localStorage.getItem('yBegin') || '';
+      document.getElementById('yEnd').value = localStorage.getItem('yEnd') || '';
+  }
+
+  // Функция для отображения графика, если есть данные
+  function displayGraph(xValues, yValues, expression) {
+      const ctx = document.getElementById('myChart').getContext('2d');
+      const myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: xValues,
+              datasets: [{
+                  label: expression,
+                  data: yValues,
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  borderWidth: 2,
+                  fill: true
+              }]
+          },
+          options: {
+              responsive: true,
+              scales: {
+                  x: {
+                      title: {
+                          display: true,
+                          text: 'x'
+                      }
+                  },
+                  y: {
+                      title: {
+                          display: true,
+                          text: 'y'
+                      }
+                  }
+              }
+          }
+      });
+  }
+
+  // Если есть данные, отображаем график
+  const xValues = [[${xValues}]]; // Если есть значения
+  const yValues = [[${yValues}]]; // Если есть значения
+  const expression = "[[${expression}]]"; // Выражение функции
+
+  if (xValues.length && yValues.length) {
+      displayGraph(xValues, yValues, expression);
+  }
+
+  // Очистка полей ввода
+  document.getElementById('clearButton').addEventListener('click', function() {
+      document.getElementById('graphForm').reset();
+      localStorage.clear(); // Очищаем localStorage
+  });
+
+  // Загружаем значения при загрузке страницы
+  loadInputs();
+
+  // Сохраняем значения при отправке формы
+  document.getElementById('graphForm').addEventListener('submit', saveInputs);
+</script>
+</body>
+</html>

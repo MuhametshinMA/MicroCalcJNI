@@ -1,0 +1,11 @@
+/* src/main/resources/static/css/styles.css */
+
+body {
+    background-color: white;
+    color: black;
+    font-size: 26px;
+}
+
+h1 {
+    color: #007bff;
+}

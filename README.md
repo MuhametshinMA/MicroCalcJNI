@@ -1,5 +1,5 @@
 # MicroCalcJNI
-Java 8, SpringBoot, JNI, ELK, Redis, Web MVC
+Java 8, SpringBoot, JNI, Docker, ELK, Redis, Web MVC
 
 For run project you need:
 - in terminal, go to dir with Makefile and execute: make

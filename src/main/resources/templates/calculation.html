@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <script>
+        function clearFields() {
+            document.getElementById('expression').value = '';
+            document.getElementById('x').value = '';
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h2>Calculator</h2>
+    <form th:action="@{/api/calculations/evaluate}" method="get">
+        <div class="form-group">
+            <label for="expression">Expression:</label>
+            <input type="text" class="form-control" id="expression" name="expression" th:value="${expression}" required>
+        </div>
+        <div class="form-group">
+            <label for="x">Value of x:</label>
+            <input type="number" step="any" class="form-control" id="x" name="x" th:value="${x}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">=</button>
+        <button type="button" class="btn btn-secondary" onclick="clearFields()">Clear</button>
+        <a href="/api/graph/graph" class="btn btn-info">Go to Graph</a> <!-- Измененный маршрут для графика -->
+    </form>
+
+    <div class="result" th:if="${result != null}">
+        <h4>Result: <span th:text="${result}"></span></h4>
+    </div>
+</div>
+</body>
+</html>
